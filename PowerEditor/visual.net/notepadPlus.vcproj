@@ -502,6 +502,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\RecentlyClosedFiles.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\MISC\RegExt\regExtDlg.cpp"
 				>
 			</File>
@@ -1542,6 +1546,10 @@
 			</File>
 			<File
 				RelativePath="..\src\WinControls\ProjectPanel\ProjectPanel_rc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RecentlyClosedFiles.h"
 				>
 			</File>
 			<File

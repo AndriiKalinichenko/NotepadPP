@@ -3,7 +3,7 @@
 
 // Global includes
 #include <windows.h>
-#include <set>
+#include <deque>
 
 // Local includes
 #ifndef PARAMETERS_H
@@ -14,6 +14,7 @@ class RecentlyClosedFiles
 {
 public:
 	RecentlyClosedFiles();
+	RecentlyClosedFiles(int maxSize);
 
 	~RecentlyClosedFiles();
 	
@@ -28,13 +29,10 @@ public:
 	bool get(const generic_string &fileName, sessionFileInfo &fileInfo);
 
 private :
-	typedef set <sessionFileInfo, 
-				bool(*)(sessionFileInfo, sessionFileInfo)>::iterator setIterator;
+	const int _maxSize;
+	deque <sessionFileInfo> _files;
 
-	set <sessionFileInfo, bool (*)(sessionFileInfo, sessionFileInfo)> _files;
-
-	// Compares only _fileName
-	static bool _cmpFiles(sessionFileInfo f1, sessionFileInfo f2);
+	deque<sessionFileInfo>::iterator _inDeque(const generic_string &fileName);
 };
 
 #endif //RECCLOSEDFILES_H

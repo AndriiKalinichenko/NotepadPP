@@ -1,11 +1,14 @@
 #include "precompiledHeaders.h"
 #include "RecentlyClosedFiles.h"
 
-RecentlyClosedFiles::RecentlyClosedFiles()
+RecentlyClosedFiles::RecentlyClosedFiles() :
+	_maxSize(100)
 {
-	_files = set	<sessionFileInfo, 
-					bool (*)(sessionFileInfo, sessionFileInfo)> 
-					(_cmpFiles);
+}
+
+RecentlyClosedFiles::RecentlyClosedFiles(int maxSize) :
+	_maxSize(maxSize) 
+{
 }
 
 RecentlyClosedFiles::~RecentlyClosedFiles()
@@ -15,18 +18,31 @@ RecentlyClosedFiles::~RecentlyClosedFiles()
 
 bool RecentlyClosedFiles::add(const sessionFileInfo &fileInfo)
 {
-	pair <setIterator, bool> res = _files.insert(fileInfo);
-	if (res.second == false) {
-		_files.erase(fileInfo);
-		_files.insert(fileInfo);
+	deque<sessionFileInfo>::iterator removePos = _inDeque(fileInfo._fileName);
+	bool remove = (removePos != _files.end());
+
+	_files.push_back(fileInfo);
+
+	if (remove) {
+		_files.erase(removePos);
+		return false;
 	}
-	return res.second;
+
+	if (_files.size() > _maxSize) {
+		_files.pop_front();
+	}
+
+	return true;
 }
 
 bool RecentlyClosedFiles::remove(const sessionFileInfo &fileInfo)
 {
-	size_t res = _files.erase(fileInfo);
-	return (res > 0);
+	deque<sessionFileInfo>::iterator removePos = _inDeque(fileInfo._fileName);
+	if (removePos != _files.end()) {
+		_files.erase(removePos);
+		return true;
+	}
+	return false;
 }
 
 void RecentlyClosedFiles::clear()
@@ -36,15 +52,22 @@ void RecentlyClosedFiles::clear()
 
 bool RecentlyClosedFiles::get(const generic_string &fileName, sessionFileInfo &fileInfo)
 {
-	sessionFileInfo tmpFileInfo(fileName);
-	setIterator iter = _files.find(tmpFileInfo);
-	if (iter != _files.end()) {
+	deque<sessionFileInfo>::iterator fileNamePos = _inDeque(fileName);
+
+	if (fileNamePos != _files.end()) {
 		fileInfo = *iter;
 	}
-	return (iter != _files.end());
+	return (fileNamePos != _files.end());
 }
 
-bool RecentlyClosedFiles::_cmpFiles(sessionFileInfo f1, sessionFileInfo f2)
+deque<sessionFileInfo>::iterator RecentlyClosedFiles::_inDeque(const generic_string &fileName)
 {
-	return (f1._fileName.compare(f2._fileName) < 0);
+	deque<sessionFileInfo>::iterator iter = _files.begin();
+	for (; iter != _files.end(); ++iter)
+	{
+		if ((*iter)._fileName == fileName) {
+			break;
+		}
+	}
+	return iter;
 }
