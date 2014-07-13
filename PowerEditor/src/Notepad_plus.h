@@ -124,6 +124,10 @@
 #include "lesDlgs.h"
 #endif //SIZE_DLG_H
 
+#ifndef RECCLOSEDFILES_H
+#include "RecentlyClosedFiles.h"
+#endif //RECCLOSEDFILES_H
+
 #include "localization.h"
 #include <vector>
 
@@ -440,6 +444,10 @@ private:
 //Document management
 	UCHAR _mainWindowStatus;	//For 2 views and user dialog if docked
 	int _activeView;
+
+	// Info about recently closed files
+	// used to contimue work from the line it was ended
+	RecentlyClosedFiles _recClosedFiles;
 
 	//User dialog docking
 	void dockUserDlg();

@@ -173,9 +173,16 @@ BufferID Notepad_plus::doOpen(const TCHAR *fileName, bool isRecursive, bool isRe
         scnN.nmhdr.code = NPPN_FILEBEFOREOPEN;
         scnN.nmhdr.idFrom = (uptr_t)buffer;
         _pluginsManager.notify(&scnN);
-       
 
+		
         loadBufferIntoView(buffer, currentView());
+
+		// Search for file in RecentlyClosedFiles
+		sessionFileInfo sfi(generic_string(TEXT("")));
+		if (_recClosedFiles.get(generic_string(fileName), sfi)) 
+		{
+			buf->setPosition(sfi, (currentView() == MAIN_VIEW ? &_mainEditView : &_subEditView));
+		}
 
         if (_pTrayIco)
         {
@@ -397,6 +404,20 @@ void Notepad_plus::doClose(BufferID id, int whichOne, bool doDeleteBackup)
 	}
 
 	int nrDocs = whichOne==MAIN_VIEW?(_mainDocTab.nbItem()):(_subDocTab.nbItem());
+
+	// Add file to RecentlyClosedFiles
+	_mainEditView.saveCurrentPos();
+	_subEditView.saveCurrentPos();
+	generic_string lang = getLangFromMenu(buf);
+	const TCHAR *langName = lang.c_str();
+	sessionFileInfo sfi (
+						buf->getFullPathName(), 
+						langName, 
+						buf->getEncoding(), 
+						buf->getPosition((whichOne == MAIN_VIEW ? &_mainEditView : &_subEditView)), 
+						buf->getBackupFileName().c_str(), 
+						int(buf->getLastModifiedTimestamp()));
+	_recClosedFiles.add(sfi);
 
 	//Do all the works
 	bool isBufRemoved = removeBufferFromView(id, whichOne);

@@ -8,7 +8,7 @@
 // Local includes
 #ifndef PARAMETERS_H
 #include "Parameters.h"
-#endif
+#endif //PARAMETERS_H
 
 class RecentlyClosedFiles
 {

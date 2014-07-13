@@ -21,18 +21,17 @@ bool RecentlyClosedFiles::add(const sessionFileInfo &fileInfo)
 	deque<sessionFileInfo>::iterator removePos = _inDeque(fileInfo._fileName);
 	bool remove = (removePos != _files.end());
 
-	_files.push_back(fileInfo);
-
 	if (remove) {
 		_files.erase(removePos);
-		return false;
 	}
+	
+	_files.push_back(fileInfo);
 
 	if (_files.size() > _maxSize) {
 		_files.pop_front();
 	}
 
-	return true;
+	return (remove == true ? false : true);
 }
 
 bool RecentlyClosedFiles::remove(const sessionFileInfo &fileInfo)
@@ -55,7 +54,7 @@ bool RecentlyClosedFiles::get(const generic_string &fileName, sessionFileInfo &f
 	deque<sessionFileInfo>::iterator fileNamePos = _inDeque(fileName);
 
 	if (fileNamePos != _files.end()) {
-		fileInfo = *iter;
+		fileInfo = *fileNamePos;
 	}
 	return (fileNamePos != _files.end());
 }
