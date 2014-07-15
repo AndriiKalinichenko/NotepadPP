@@ -69,6 +69,14 @@
 #include "dpiManager.h"
 #endif //DPIMANAGER_H
 
+#ifndef RECCLOSEDFILES_H
+#include "RecentlyClosedFiles.h"
+#endif //RECCLOSEDFILES_H
+
+#ifndef SESSION_H
+#include "Session.h"
+#endif //SESSION_H
+
 
 #include <tchar.h>
 
@@ -139,46 +147,6 @@ const TCHAR notepadStyleFile[] = TEXT("asNotepad.xml");
 void cutString(const TCHAR *str2cut, vector<generic_string> & patternVect);
 
 
-struct Position
-{ 
-	int _firstVisibleLine;
-	int _startPos;
-	int _endPos;
-	int _xOffset;
-	int _selMode;
-	int _scrollWidth;
-	Position() : _firstVisibleLine(0), _startPos(0), _endPos(0), _xOffset(0), _scrollWidth(1), _selMode(0) {};
-};
-
-struct sessionFileInfo : public Position {
-	sessionFileInfo(const TCHAR *fn, const TCHAR *ln, int encoding, Position pos, const TCHAR *backupFilePath, int originalFileLastModifTimestamp) : 
-		_encoding(encoding), Position(pos), _originalFileLastModifTimestamp(originalFileLastModifTimestamp) {
-		if (fn) _fileName = fn;
-		if (ln)	_langName = ln;
-		if (backupFilePath) _backupFilePath = backupFilePath;
-	};
-
-	sessionFileInfo(generic_string fn) : _fileName(fn), _encoding(-1){};
-	
-	generic_string _fileName;
-	generic_string	_langName;
-	vector<size_t> _marks;
-	vector<size_t> _foldStates;
-	int	_encoding;
-
-	generic_string _backupFilePath;
-	time_t _originalFileLastModifTimestamp;
-};
-
-struct Session {
-	size_t nbMainFiles() const {return _mainViewFiles.size();};
-	size_t nbSubFiles() const {return _subViewFiles.size();};
-	size_t _activeView;
-	size_t _activeMainIndex;
-	size_t _activeSubIndex;
-	vector<sessionFileInfo> _mainViewFiles;
-	vector<sessionFileInfo> _subViewFiles;
-};
 
 struct CmdLineParams {
 	bool _isNoPlugin;
@@ -1356,6 +1324,7 @@ public:
 	void writeUserDefinedLang();
 	void writeShortcuts();
 	void writeSession(const Session & session, const TCHAR *fileName = NULL);
+	void writeRecClosedFiles();
 	bool writeFindHistory();
 
 	bool isExistingUserLangName(const TCHAR *newName) const {
@@ -1559,7 +1528,7 @@ private:
     static NppParameters *_pSelf;
 
 	TiXmlDocument *_pXmlDoc, *_pXmlUserDoc, *_pXmlUserStylerDoc, *_pXmlUserLangDoc,\
-		*_pXmlToolIconsDoc, *_pXmlShortcutDoc, *_pXmlSessionDoc,\
+		*_pXmlToolIconsDoc, *_pXmlShortcutDoc, *_pXmlSessionDoc, *_pXmlRecClosedFilesDoc,\
         *_pXmlBlacklistDoc;
 
 	TiXmlDocument *_importedULD[NB_MAX_IMPORTED_UDL];
@@ -1629,10 +1598,12 @@ private:
 	//vector<generic_string> _noMenuCmdNames;
 	vector<MenuItemUnit> _contextMenuItems;
 	Session _session;
+	RecentlyClosedFiles _recClosedFiles;
 
 	generic_string _shortcutsPath;
 	generic_string _contextMenuPath;
 	generic_string _sessionPath;
+	generic_string _recClosedFilesPath;
     generic_string _blacklistPath;
 	generic_string _nppPath;
 	generic_string _userPath;
@@ -1682,6 +1653,7 @@ private:
 	bool getPluginCmdsFromXmlTree();
 	bool getScintKeysFromXmlTree();
 	bool getSessionFromXmlTree(TiXmlDocument *pSessionDoc = NULL, Session *session = NULL);
+	bool getRecClosedFilesFromXmlTree();
     bool getBlackListFromXmlTree();
 
 	void feedGUIParameters(TiXmlNode *node);

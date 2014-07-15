@@ -1,14 +1,21 @@
-#ifndef RECCLOSEDFILES_H
-#define RECCLOSEDFILES_H
-
-// Global includes
-#include <windows.h>
-#include <deque>
+#pragma once
+//#ifndef RECCLOSEDFILES_H
+//#define RECCLOSEDFILES_H
 
 // Local includes
-#ifndef PARAMETERS_H
-#include "Parameters.h"
-#endif //PARAMETERS_H
+#ifndef SESSION_H
+#include "Session.h"
+#endif //SESSION_H
+
+#ifndef PRECOMPILEHEADER_H
+#include "precompiledHeaders.h"
+#endif //PRECOMPILEHEADER_H
+
+// Global includes
+//#include <windows.h>
+//#include <deque>
+
+struct sessionFileInfo;
 
 class RecentlyClosedFiles
 {
@@ -28,6 +35,9 @@ public:
 	// false is returned in case of file not found
 	bool get(const generic_string &fileName, sessionFileInfo &fileInfo);
 
+	size_t size() const { return _files.size(); };
+	sessionFileInfo &get(size_t idx);
+
 private :
 	const int _maxSize;
 	deque <sessionFileInfo> _files;
@@ -35,4 +45,4 @@ private :
 	deque<sessionFileInfo>::iterator _inDeque(const generic_string &fileName);
 };
 
-#endif //RECCLOSEDFILES_H
+//#endif //RECCLOSEDFILES_H

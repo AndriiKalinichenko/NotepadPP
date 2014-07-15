@@ -182,6 +182,7 @@ BufferID Notepad_plus::doOpen(const TCHAR *fileName, bool isRecursive, bool isRe
 		if (_recClosedFiles.get(generic_string(fileName), sfi)) 
 		{
 			buf->setPosition(sfi, (currentView() == MAIN_VIEW ? &_mainEditView : &_subEditView));
+			_recClosedFiles.remove(sfi);
 		}
 
         if (_pTrayIco)

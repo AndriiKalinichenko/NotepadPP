@@ -70,3 +70,14 @@ deque<sessionFileInfo>::iterator RecentlyClosedFiles::_inDeque(const generic_str
 	}
 	return iter;
 }
+
+sessionFileInfo &RecentlyClosedFiles::get(size_t idx)
+{
+	if (idx >= _files.size()) {
+		idx = _files.size() - 1;
+	}
+	if (idx < 0) {
+		return *(new sessionFileInfo(TEXT("")));
+	}
+	return _files.at(idx);
+}

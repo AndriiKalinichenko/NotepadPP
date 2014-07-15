@@ -446,7 +446,7 @@ private:
 	int _activeView;
 
 	// Info about recently closed files
-	// used to contimue work from the line it was ended
+	// used to continue work from the line it was ended
 	RecentlyClosedFiles _recClosedFiles;
 
 	//User dialog docking
