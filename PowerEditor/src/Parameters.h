@@ -1324,7 +1324,7 @@ public:
 	void writeUserDefinedLang();
 	void writeShortcuts();
 	void writeSession(const Session & session, const TCHAR *fileName = NULL);
-	void writeRecClosedFiles();
+	void writeRecClosedFiles(const RecentlyClosedFiles &rcf);
 	bool writeFindHistory();
 
 	bool isExistingUserLangName(const TCHAR *newName) const {
@@ -1421,6 +1421,7 @@ public:
 
 	vector<MenuItemUnit> & getContextMenuItems() {return _contextMenuItems;};
 	const Session & getSession() const {return _session;};
+	const RecentlyClosedFiles & getRecClosedFiles() const { return _recClosedFiles; }
 
 	bool hasCustomContextMenu() const {return !_contextMenuItems.empty();};
 

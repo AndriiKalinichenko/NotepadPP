@@ -1028,6 +1028,7 @@ bool NppParameters::load()
 	}
 
 	_sessionPath = _userPath; // Session stock the absolute file path, it should never be on cloud
+	_recClosedFilesPath = _userPath; // Recently closed files as well
 
 	// Detection cloud settings
 	//bool isCloud = false;
@@ -1346,6 +1347,23 @@ bool NppParameters::load()
 
 		_pXmlSessionDoc = NULL;
 	}
+
+	//-----------------------------------//
+	// recClosedFiles.xml : for per user //
+	//-----------------------------------//
+
+	PathAppend(_recClosedFilesPath, TEXT("recClosedFiles.xml"));
+
+	_pXmlRecClosedFilesDoc = new TiXmlDocument(_recClosedFilesPath);
+	loadOkay = _pXmlRecClosedFilesDoc->LoadFile();
+	if (loadOkay)
+	{
+		getRecClosedFilesFromXmlTree();
+	}
+
+	// Not sure if deletion is needed
+	/*delete _pXmlRecClosedFilesDoc;
+	_pXmlRecClosedFilesDoc = NULL;*/
 
     //------------------------------//
 	// blacklist.xml : for per user //
@@ -2826,20 +2844,20 @@ void NppParameters::writeSession(const Session & session, const TCHAR *fileName)
 
 }
 
-void NppParameters::writeRecClosedFiles()
+void NppParameters::writeRecClosedFiles(const RecentlyClosedFiles &rcf)
 {
 	_pXmlRecClosedFilesDoc = new TiXmlDocument(_recClosedFilesPath);
 	TiXmlNode *root = _pXmlRecClosedFilesDoc->InsertEndChild(TiXmlElement(TEXT("NotepadPlus")));
 
 	if (root)
 	{
-		TiXmlNode *rcf = root->InsertEndChild(TiXmlElement(TEXT("RecentlyClosedFiles")));
+		TiXmlNode *pRCF = root->InsertEndChild(TiXmlElement(TEXT("RecentlyClosedFiles")));
 
-		for (size_t i = 0; i < _recClosedFiles.size(); ++i)
+		for (size_t i = 0; i < rcf.size(); ++i)
 		{
-			TiXmlNode *file = rcf->InsertEndChild(TiXmlElement(TEXT("File")));
+			TiXmlNode *file = pRCF->InsertEndChild(TiXmlElement(TEXT("File")));
 
-			const sessionFileInfo &sfi = _recClosedFiles.get(i);
+			const sessionFileInfo &sfi = rcf.get(i);
 			const Position &pos = (Position &)sfi;
 			
 			file->ToElement()->SetAttribute(TEXT("firstVisibleLine"),pos._firstVisibleLine);

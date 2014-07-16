@@ -1188,6 +1188,7 @@ void Notepad_plus::loadLastSession()
 	NppParameters *nppParams = NppParameters::getInstance();
 	const NppGUI & nppGui = nppParams->getNppGUI();
 	Session lastSession = nppParams->getSession();
+	_recClosedFiles = nppParams->getRecClosedFiles();
 	bool isSnapshotMode = nppGui.isSnapshotMode();
     loadSession(lastSession, isSnapshotMode);
 }

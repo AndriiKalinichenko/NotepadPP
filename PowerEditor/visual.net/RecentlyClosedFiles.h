@@ -36,10 +36,12 @@ public:
 	bool get(const generic_string &fileName, sessionFileInfo &fileInfo);
 
 	size_t size() const { return _files.size(); };
-	sessionFileInfo &get(size_t idx);
+	// If _files.size() <= idx function throws exception out_of_range
+	const sessionFileInfo &get(size_t idx) const;
 
 private :
-	const int _maxSize;
+	//const int _maxSize;
+	int _maxSize;
 	deque <sessionFileInfo> _files;
 
 	deque<sessionFileInfo>::iterator _inDeque(const generic_string &fileName);

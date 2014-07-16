@@ -272,6 +272,9 @@ public:
     };
 	void saveSession(const Session & session);
 	void saveCurrentSession();
+	void saveRecClosedFiles(const RecentlyClosedFiles &rcf){
+		NppParameters::getInstance()->writeRecClosedFiles(_recClosedFiles);
+	}
 
     void saveFindHistory(){
         _findReplaceDlg.saveFindHistory();

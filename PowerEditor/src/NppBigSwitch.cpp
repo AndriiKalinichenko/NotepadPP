@@ -1489,6 +1489,29 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPa
 			    if (nppgui._rememberLastSession && !nppgui._isCmdlineNosessionActivated)
 				    saveSession(currentSession);
 
+				//
+				// saving recClosedFiles.xml
+				//
+
+				// Remove session files that are in _recClosedFiles
+				// because they are stored their own way
+				sessionFileInfo sfi(TEXT(""));
+				for (size_t i = 0; i < currentSession.nbMainFiles(); ++i)
+				{
+					if (_recClosedFiles.get(currentSession._mainViewFiles[i]._fileName, sfi))
+					{
+						_recClosedFiles.remove(sfi);
+					}
+				}
+				for (size_t i = 0; i < currentSession.nbSubFiles(); ++i)
+				{
+					if (_recClosedFiles.get(currentSession._subViewFiles[i]._fileName, sfi))
+					{
+						_recClosedFiles.remove(sfi);
+					}
+				}
+				saveRecClosedFiles(_recClosedFiles);
+
 				// write settings on cloud if enabled, if the settings files don't exist
 				if (nppgui._cloudChoice != noCloud)
 				{
