@@ -35,6 +35,7 @@
 #include "documentMap.h"
 
 #define WM_DPICHANGED 0x02E0
+#define BREAK_TIMER_ID 1
 
 struct SortTaskListPred
 {
@@ -80,10 +81,14 @@ LRESULT CALLBACK Notepad_plus_Window::Notepad_plus_Proc(HWND hwnd, UINT Message,
 LRESULT Notepad_plus_Window::runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT result = FALSE;
+	NppParameters *pNppParam = NppParameters::getInstance();
 	switch (Message)
 	{
 		case WM_CREATE:
 		{
+			NppGUI & nppGUI = (NppGUI &)pNppParam->getNppGUI();
+			//set timer for break notification
+			SetTimer(hwnd, BREAK_TIMER_ID, nppGUI._timerVal, NULL);
 			try{
 				_notepad_plus_plus_core._pPublicInterface = this;
 				result = _notepad_plus_plus_core.init(hwnd);
@@ -108,6 +113,23 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPa
 	NppParameters *pNppParam = NppParameters::getInstance();
 	switch (Message)
 	{
+		case WM_TIMER:
+		{
+			
+			NppGUI & nppGUI = (NppGUI &)pNppParam->getNppGUI();
+			switch(wParam) {
+				case BREAK_TIMER_ID:
+						::MessageBeep(-1);
+						::KillTimer(hwnd, BREAK_TIMER_ID);
+						::MessageBox(hwnd, TEXT("Let get some coffee!"), TEXT("Break Time"), MB_OK);
+						SetTimer(hwnd, BREAK_TIMER_ID, nppGUI._timerVal, NULL);
+						break;
+				//case progress_bar_fill_timer:
+
+			}
+			return 0;
+		}
+
 		case WM_NCACTIVATE:
 		{
 			// Note: lParam is -1 to prevent endless loops of calls
