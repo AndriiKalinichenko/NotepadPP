@@ -39,3 +39,4 @@ http://notepad-plus-plus.org/
 
 Notepad++ team
 http://notepad-plus-plus.org/contributors
+O====3
