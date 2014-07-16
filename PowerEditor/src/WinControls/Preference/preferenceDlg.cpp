@@ -142,6 +142,10 @@ BOOL CALLBACK PreferenceDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM lPa
 			_settingsOnCloudDlg.init(_hInst, _hSelf);
 			_settingsOnCloudDlg.create(IDD_PREFERENCE_SETTINGSONCLOUD_BOX, false, false);
 
+			_timerSettingsDlg.init(_hInst, _hSelf);
+			_timerSettingsDlg.create(IDD_PREFERENCE_TIMER_SETTINGS_BOX, false, false);
+		
+
 
 			_wVector.push_back(DlgInfo(&_barsDlg, TEXT("General"), TEXT("Global")));
 			_wVector.push_back(DlgInfo(&_marginsDlg, TEXT("Editing"), TEXT("Scintillas")));
@@ -158,7 +162,7 @@ BOOL CALLBACK PreferenceDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM lPa
 			_wVector.push_back(DlgInfo(&_delimiterSettingsDlg, TEXT("Delimiter"), TEXT("Delimiter")));
 			_wVector.push_back(DlgInfo(&_settingsOnCloudDlg, TEXT("Cloud"), TEXT("Cloud")));
 			_wVector.push_back(DlgInfo(&_settingsDlg, TEXT("MISC."), TEXT("MISC")));
-
+			_wVector.push_back(DlgInfo(&_timerSettingsDlg, TEXT("Timer"), TEXT("Timer")));
 
 			makeCategoryList();
 			RECT rc;
@@ -183,6 +187,7 @@ BOOL CALLBACK PreferenceDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM lPa
 			_multiInstDlg.reSizeTo(rc);
 			_delimiterSettingsDlg.reSizeTo(rc);
 			_settingsOnCloudDlg.reSizeTo(rc);
+			_timerSettingsDlg.reSizeTo(rc);
 
 			NppParameters *pNppParam = NppParameters::getInstance();
 			ETDTProc enableDlgTheme = (ETDTProc)pNppParam->getEnableThemeDlgTexture();
@@ -2888,3 +2893,27 @@ void SettingsOnCloudDlg::removeCloudChoice()
 	}
 }
 
+BOOL CALLBACK TimerSettingsDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM) {
+	NppParameters *pNppParam = NppParameters::getInstance();
+	NppGUI & nppGUI = (NppGUI &)pNppParam->getNppGUI();
+	switch(Message) {
+		case WM_INITDIALOG:
+			::SendDlgItemMessage(_hSelf, IDC_EDIT_CHOOSE_TIMER_INTERVAL, WM_SETTEXT, 0, (LPARAM)TEXT("12"));
+			::SendDlgItemMessage(_hSelf, IDC_STATIC_CHOOSE_TIMER_INTERVAL, WM_SETTEXT, 0, (LPARAM)TEXT("Choose interval"));
+			return TRUE;
+							
+		case WM_COMMAND: 
+			switch(wParam) {
+				case IDC_EDIT_CHOOSE_TIMER_INTERVAL: 
+					GetDlgItemInt(_hSelf, nppGUI._timerVal, NULL, false);
+					break;
+													 
+				default: 
+					return FALSE;
+
+			}
+			break;
+						 
+	}
+	return FALSE;
+}
