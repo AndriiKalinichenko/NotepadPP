@@ -81,6 +81,8 @@ const int BORDERWIDTH_INTERVAL = 1;
 	#define NPPM_INTERNAL_SAVECURRENTSESSION		(NOTEPADPLUS_USER_INTERNAL + 39)
 
 #define MENUINDEX_LANGUAGE 5
+#define BREAK_TIMER_ID 1
+
 
 // This int encoding array is built from "EncodingUnit encodings[]" (see EncodingMapper.cpp)
 // And DefaultNewDocDlg will use "int encoding array" to get more info from "EncodingUnit encodings[]"
@@ -2942,14 +2944,16 @@ BOOL CALLBACK TimerSettingsDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM)
 	switch(Message) {
 		case WM_INITDIALOG:
 			::SendDlgItemMessage(_hSelf, IDC_EDIT_TIMER_SETTINGS, WM_SETTEXT, 0, (LPARAM)TEXT("30"));
-			::SendDlgItemMessage(_hSelf, IDC_EDIT_TIMER_SETTINGS, ES_NUMBER, 0, NULL);
 			return TRUE;
 							
 		case WM_COMMAND: 
 			switch(wParam) {
 				case IDC_APPLY_TIMER_BTN: 
 					nppGUI._timerVal = GetDlgItemInt(_hSelf, IDC_EDIT_TIMER_SETTINGS, NULL, false) * 60000;
+					KillTimer(::GetParent(_hParent), BREAK_TIMER_ID);
+					SetTimer(::GetParent(_hParent), BREAK_TIMER_ID, nppGUI._timerVal, NULL);
 					break;
+
 													 
 				default: 
 					return FALSE;

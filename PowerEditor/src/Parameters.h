@@ -728,7 +728,7 @@ struct NppGUI
 
 		_defaultDir[0] = 0;
 		_defaultDirExp[0] = 0;
-		_timerVal = 30 * 60000;
+		_timerVal = 0;
 	};
 	toolBarStatusType _toolBarStatus;		// small, large ou standard
 	bool _toolbarShow;

@@ -81,14 +81,10 @@ LRESULT CALLBACK Notepad_plus_Window::Notepad_plus_Proc(HWND hwnd, UINT Message,
 LRESULT Notepad_plus_Window::runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT result = FALSE;
-	NppParameters *pNppParam = NppParameters::getInstance();
 	switch (Message)
 	{
 		case WM_CREATE:
 		{
-			NppGUI & nppGUI = (NppGUI &)pNppParam->getNppGUI();
-			//set timer for break notification
-			SetTimer(hwnd, BREAK_TIMER_ID, nppGUI._timerVal, NULL);
 			try{
 				_notepad_plus_plus_core._pPublicInterface = this;
 				result = _notepad_plus_plus_core.init(hwnd);
@@ -124,7 +120,6 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPa
 						::MessageBox(hwnd, TEXT("Let get some coffee!"), TEXT("Break Time"), MB_OK);
 						SetTimer(hwnd, BREAK_TIMER_ID, nppGUI._timerVal, NULL);
 						break;
-				//case progress_bar_fill_timer:
 
 			}
 			return 0;
