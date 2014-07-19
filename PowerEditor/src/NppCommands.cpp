@@ -62,6 +62,34 @@ void Notepad_plus::command(int id)
 		}
 		break;
 
+		case IDM_FILE_NEW_C:
+		{
+			fileNew();
+			setLanguage(menuID2LangType(IDM_LANG_C));
+		}
+		break;
+
+		case IDM_FILE_NEW_CS:
+		{
+			fileNew();
+			setLanguage(menuID2LangType(IDM_LANG_CS));
+		}
+		break;
+
+		case IDM_FILE_NEW_CPP:
+		{
+			fileNew();
+			setLanguage(menuID2LangType(IDM_LANG_CPP));
+		}
+		break;
+
+		case IDM_FILE_NEW_JAVA:
+		{
+			fileNew();
+			setLanguage(menuID2LangType(IDM_LANG_JAVA));
+		}
+		break;
+
 		case IDM_FILE_OPEN:
 		{
 			fileOpen();
@@ -2503,7 +2531,7 @@ void Notepad_plus::command(int id)
 	if (_recordingMacro) 
 		switch (id)
 		{
-			case IDM_FILE_NEW :
+			
 			case IDM_FILE_CLOSE :
 			case IDM_FILE_CLOSEALL :
 			case IDM_FILE_CLOSEALL_BUT_CURRENT :
@@ -2634,5 +2662,12 @@ void Notepad_plus::command(int id)
 			case IDM_SEARCH_CLEARALLMARKS    :
 				_macro.push_back(recordedMacroStep(id));
 				break;
+			case IDM_FILE_NEW :
+			case IDM_FILE_NEW_C :
+			case IDM_FILE_NEW_CS :
+			case IDM_FILE_NEW_CPP :
+			case IDM_FILE_NEW_JAVA :
+                 _macro.push_back(recordedMacroStep(IDM_FILE_NEW));
+				 break;
 		}
 }
