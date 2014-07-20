@@ -146,10 +146,6 @@ const TCHAR notepadStyleFile[] = TEXT("asNotepad.xml");
 void cutString(const TCHAR *str2cut, vector<generic_string> & patternVect);
 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> continueBr
 struct CmdLineParams {
 	bool _isNoPlugin;
 	bool _isReadOnly;
