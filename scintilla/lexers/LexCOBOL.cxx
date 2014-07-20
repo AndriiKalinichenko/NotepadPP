@@ -7,7 +7,6 @@
  ** Updated by Mathias Rauen <scite@madshi.net> May 2003 (Delphi adjustments)
  ** Updated by Rod Falck, Aug 2006 Converted to COBOL
  **/
-
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
