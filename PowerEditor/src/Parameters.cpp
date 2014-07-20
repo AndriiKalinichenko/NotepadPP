@@ -657,10 +657,10 @@ NppParameters::NppParameters() :	_pXmlDoc(NULL),_pXmlUserDoc(NULL), _pXmlUserSty
 									_pXmlNativeLangDocA(NULL), _nbLang(0), _pXmlToolIconsDoc(NULL), _nbRecentFile(0),\
 									_nbMaxRecentFile(10), _recentFileCustomLength(RECENTFILES_SHOWFULLPATH),\
 									_putRecentFileInSubMenu(false),	_pXmlShortcutDoc(NULL), _pXmlContextMenuDocA(NULL),\
-									_pXmlSessionDoc(NULL), _pXmlBlacklistDoc(NULL),	_nbUserLang(0), _nbExternalLang(0),\
-									_hUser32(NULL), _hUXTheme(NULL), _transparentFuncAddr(NULL), _enableThemeDialogTextureFuncAddr(NULL),\
-									_pNativeLangSpeaker(NULL), _isTaskListRBUTTONUP_Active(false), _fileSaveDlgFilterIndex(-1),\
-									_asNotepadStyle(false), _isFindReplacing(false)
+									_pXmlSessionDoc(NULL), _pXmlRecClosedFilesDoc(NULL), _pXmlBlacklistDoc(NULL),	_nbUserLang(0),\
+									_nbExternalLang(0),	_hUser32(NULL), _hUXTheme(NULL), _transparentFuncAddr(NULL),\
+									_enableThemeDialogTextureFuncAddr(NULL), _pNativeLangSpeaker(NULL), _isTaskListRBUTTONUP_Active(false),\
+									_fileSaveDlgFilterIndex(-1), _asNotepadStyle(false), _isFindReplacing(false)
 {
 	// init import UDL array
 	_nbImportedULD = 0;
@@ -1028,6 +1028,7 @@ bool NppParameters::load()
 	}
 
 	_sessionPath = _userPath; // Session stock the absolute file path, it should never be on cloud
+	_recClosedFilesPath = _userPath; // Recently closed files as well
 
 	// Detection cloud settings
 	//bool isCloud = false;
@@ -1346,6 +1347,23 @@ bool NppParameters::load()
 
 		_pXmlSessionDoc = NULL;
 	}
+
+	//-----------------------------------//
+	// recClosedFiles.xml : for per user //
+	//-----------------------------------//
+
+	PathAppend(_recClosedFilesPath, TEXT("recClosedFiles.xml"));
+
+	_pXmlRecClosedFilesDoc = new TiXmlDocument(_recClosedFilesPath);
+	loadOkay = _pXmlRecClosedFilesDoc->LoadFile();
+	if (loadOkay)
+	{
+		getRecClosedFilesFromXmlTree();
+	}
+
+	// Not sure if deletion is needed
+	/*delete _pXmlRecClosedFilesDoc;
+	_pXmlRecClosedFilesDoc = NULL;*/
 
     //------------------------------//
 	// blacklist.xml : for per user //
@@ -1924,6 +1942,80 @@ bool NppParameters::getSessionFromXmlTree(TiXmlDocument *pSessionDoc, Session *p
 						(*ptrSession)._subViewFiles.push_back(sfi);
 				}
 			}
+		}
+	}
+	
+	return true;
+}
+
+bool NppParameters::getRecClosedFilesFromXmlTree()
+{
+	if (!_pXmlRecClosedFilesDoc) 
+	{
+		return false;
+	}
+
+	TiXmlDocument **ppRCFDoc = &_pXmlRecClosedFilesDoc;
+	RecentlyClosedFiles *pRCF = &_recClosedFiles;
+	
+	TiXmlNode *root = (*ppRCFDoc)->FirstChild(TEXT("NotepadPlus"));
+	if (!root) 
+		return false;
+	
+	TiXmlNode *rcfRoot = root->FirstChildElement(TEXT("RecentlyClosedFiles"));
+	if (!rcfRoot)
+		return false;
+	
+	for (TiXmlNode *childNode = rcfRoot->FirstChildElement(TEXT("File"));
+		childNode;
+		childNode = childNode->NextSibling(TEXT("File")) )
+	{
+		const TCHAR *fileName = (childNode->ToElement())->Attribute(TEXT("filename"));
+		if (fileName)
+		{
+			Position position;
+			(childNode->ToElement())->Attribute(TEXT("firstVisibleLine"), &position._firstVisibleLine);
+			(childNode->ToElement())->Attribute(TEXT("xOffset"), &position._xOffset);
+			(childNode->ToElement())->Attribute(TEXT("startPos"), &position._startPos);
+			(childNode->ToElement())->Attribute(TEXT("endPos"), &position._endPos);
+			(childNode->ToElement())->Attribute(TEXT("selMode"), &position._selMode);
+			(childNode->ToElement())->Attribute(TEXT("scrollWidth"), &position._scrollWidth);
+
+			const TCHAR *langName = (childNode->ToElement())->Attribute(TEXT("lang"));
+			int encoding = -1;
+			const TCHAR *encStr = (childNode->ToElement())->Attribute(TEXT("encoding"), &encoding);
+			const TCHAR *backupFilePath = (childNode->ToElement())->Attribute(TEXT("backupFilePath"));
+
+			int fileModifiedTimestamp = 0;
+			(childNode->ToElement())->Attribute(TEXT("originalFileLastModifTimestamp"), &fileModifiedTimestamp);
+
+			sessionFileInfo sfi(fileName, langName, encStr?encoding:-1, position, backupFilePath, fileModifiedTimestamp);
+
+			for (TiXmlNode *markNode = childNode->FirstChildElement(TEXT("Mark"));
+				markNode ;
+				markNode = markNode->NextSibling(TEXT("Mark")))
+			{
+				int lineNumber;
+				const TCHAR *lineNumberStr = (markNode->ToElement())->Attribute(TEXT("line"), &lineNumber);
+				if (lineNumberStr)
+				{
+					sfi._marks.push_back(lineNumber);
+				}
+			}
+
+			for (TiXmlNode *foldNode = childNode->FirstChildElement(TEXT("Fold"));
+				foldNode ;
+				foldNode = foldNode->NextSibling(TEXT("Fold")))
+			{
+				int lineNumber;
+				const TCHAR *lineNumberStr = (foldNode->ToElement())->Attribute(TEXT("line"), &lineNumber);
+				if (lineNumberStr)
+				{
+					sfi._foldStates.push_back(lineNumber);
+				}
+			}
+
+			_recClosedFiles.add(sfi);
 		}
 	}
 	
@@ -2750,6 +2842,51 @@ void NppParameters::writeSession(const Session & session, const TCHAR *fileName)
 	}
 	_pXmlSessionDoc->SaveFile();
 
+}
+
+void NppParameters::writeRecClosedFiles(const RecentlyClosedFiles &rcf)
+{
+	_pXmlRecClosedFilesDoc = new TiXmlDocument(_recClosedFilesPath);
+	TiXmlNode *root = _pXmlRecClosedFilesDoc->InsertEndChild(TiXmlElement(TEXT("NotepadPlus")));
+
+	if (root)
+	{
+		TiXmlNode *pRCF = root->InsertEndChild(TiXmlElement(TEXT("RecentlyClosedFiles")));
+
+		for (size_t i = 0; i < rcf.size(); ++i)
+		{
+			TiXmlNode *file = pRCF->InsertEndChild(TiXmlElement(TEXT("File")));
+
+			const sessionFileInfo &sfi = rcf.get(i);
+			const Position &pos = (Position &)sfi;
+			
+			file->ToElement()->SetAttribute(TEXT("firstVisibleLine"),pos._firstVisibleLine);
+			file->ToElement()->SetAttribute(TEXT("xOffset"), pos._xOffset);
+			file->ToElement()->SetAttribute(TEXT("scrollWidth"), pos._scrollWidth);
+			file->ToElement()->SetAttribute(TEXT("startPos"), pos._startPos);
+			file->ToElement()->SetAttribute(TEXT("endPos"), pos._endPos);
+			file->ToElement()->SetAttribute(TEXT("selMode"), pos._selMode);
+
+			file->ToElement()->SetAttribute(TEXT("lang"), sfi._langName.c_str());
+			file->ToElement()->SetAttribute(TEXT("encoding"), sfi._encoding);
+			file->ToElement()->SetAttribute(TEXT("filename"), sfi._fileName.c_str());
+			file->ToElement()->SetAttribute(TEXT("backupFilePath"), sfi._backupFilePath.c_str());
+			file->ToElement()->SetAttribute(TEXT("originalFileLastModifTimestamp"), sfi._originalFileLastModifTimestamp);
+
+			for (size_t fold = 0; fold < sfi._foldStates.size(); ++fold)
+			{
+				TiXmlNode *foldNode = file->InsertEndChild(TiXmlElement(TEXT("Fold")));
+				foldNode->ToElement()->SetAttribute(TEXT("line"), sfi._foldStates[fold]);
+			}
+
+			for (size_t mark = 0; mark < sfi._marks.size(); ++mark)
+			{
+				TiXmlNode *markNode = file->InsertEndChild(TiXmlElement(TEXT("Mark")));
+				markNode->ToElement()->SetAttribute(TEXT("line"), sfi._marks[mark]);
+			}
+		}
+	}
+	_pXmlRecClosedFilesDoc->SaveFile();
 }
 
 void NppParameters::writeShortcuts()
