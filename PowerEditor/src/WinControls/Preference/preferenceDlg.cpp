@@ -39,6 +39,51 @@ const int BORDERWIDTH_SMALLEST = 0;
 const int BORDERWIDTH_LARGEST = 30;
 const int BORDERWIDTH_INTERVAL = 1;
 
+#define NOTEPADPLUS_USER_INTERNAL     (WM_USER + 0000)
+	#define NPPM_INTERNAL_USERCMDLIST_MODIFIED      (NOTEPADPLUS_USER_INTERNAL + 1)
+	#define NPPM_INTERNAL_CMDLIST_MODIFIED          (NOTEPADPLUS_USER_INTERNAL + 2)
+	#define NPPM_INTERNAL_MACROLIST_MODIFIED        (NOTEPADPLUS_USER_INTERNAL + 3)
+	#define NPPM_INTERNAL_PLUGINCMDLIST_MODIFIED    (NOTEPADPLUS_USER_INTERNAL + 4)
+	#define NPPM_INTERNAL_CLEARSCINTILLAKEY         (NOTEPADPLUS_USER_INTERNAL + 5)
+	#define NPPM_INTERNAL_BINDSCINTILLAKEY	        (NOTEPADPLUS_USER_INTERNAL + 6)
+	#define NPPM_INTERNAL_SCINTILLAKEYMODIFIED      (NOTEPADPLUS_USER_INTERNAL + 7)
+	#define NPPM_INTERNAL_SCINTILLAFINFERCOLLAPSE   (NOTEPADPLUS_USER_INTERNAL + 8)
+	#define NPPM_INTERNAL_SCINTILLAFINFERUNCOLLAPSE (NOTEPADPLUS_USER_INTERNAL + 9)
+	#define NPPM_INTERNAL_DISABLEAUTOUPDATE			(NOTEPADPLUS_USER_INTERNAL + 10)
+	#define NPPM_INTERNAL_SETTING_HISTORY_SIZE		(NOTEPADPLUS_USER_INTERNAL + 11)
+	#define NPPM_INTERNAL_ISTABBARREDUCED			(NOTEPADPLUS_USER_INTERNAL + 12)
+	#define NPPM_INTERNAL_ISFOCUSEDTAB				(NOTEPADPLUS_USER_INTERNAL + 13)
+	#define NPPM_INTERNAL_GETMENU					(NOTEPADPLUS_USER_INTERNAL + 14)
+	#define NPPM_INTERNAL_CLEARINDICATOR			(NOTEPADPLUS_USER_INTERNAL + 15)
+	#define NPPM_INTERNAL_SCINTILLAFINFERCOPY       (NOTEPADPLUS_USER_INTERNAL + 16)
+	#define NPPM_INTERNAL_SCINTILLAFINFERSELECTALL  (NOTEPADPLUS_USER_INTERNAL + 17)
+	#define NPPM_INTERNAL_SETCARETWIDTH             (NOTEPADPLUS_USER_INTERNAL + 18)
+	#define NPPM_INTERNAL_SETCARETBLINKRATE         (NOTEPADPLUS_USER_INTERNAL + 19)
+	#define NPPM_INTERNAL_CLEARINDICATORTAGMATCH	(NOTEPADPLUS_USER_INTERNAL + 20)
+	#define NPPM_INTERNAL_CLEARINDICATORTAGATTR		(NOTEPADPLUS_USER_INTERNAL + 21)
+	#define NPPM_INTERNAL_SWITCHVIEWFROMHWND		(NOTEPADPLUS_USER_INTERNAL + 22)
+	#define NPPM_INTERNAL_UPDATETITLEBAR			(NOTEPADPLUS_USER_INTERNAL + 23)
+	#define NPPM_INTERNAL_CANCEL_FIND_IN_FILES		(NOTEPADPLUS_USER_INTERNAL + 24)
+	#define NPPM_INTERNAL_RELOADNATIVELANG			(NOTEPADPLUS_USER_INTERNAL + 25)
+	#define NPPM_INTERNAL_PLUGINSHORTCUTMOTIFIED	(NOTEPADPLUS_USER_INTERNAL + 26)
+	#define NPPM_INTERNAL_SCINTILLAFINFERCLEARALL	(NOTEPADPLUS_USER_INTERNAL + 27)
+	#define	NPPM_INTERNAL_SETTING_EDGE_SIZE			(NOTEPADPLUS_USER_INTERNAL + 28)
+	#define	NPPM_INTERNAL_SETTING_TAB_REPLCESPACE	(NOTEPADPLUS_USER_INTERNAL + 29)
+	#define	NPPM_INTERNAL_SETTING_TAB_SIZE			(NOTEPADPLUS_USER_INTERNAL + 30)
+	#define	NPPM_INTERNAL_RELOADSTYLERS				(NOTEPADPLUS_USER_INTERNAL + 31)
+	#define NPPM_INTERNAL_DOCORDERCHANGED			(NOTEPADPLUS_USER_INTERNAL + 32)
+	#define NPPM_INTERNAL_SETMULTISELCTION          (NOTEPADPLUS_USER_INTERNAL + 33)
+	#define	NPPM_INTERNAL_SCINTILLAFINFEROPENALL 	(NOTEPADPLUS_USER_INTERNAL + 34)
+	#define	NPPM_INTERNAL_RECENTFILELIST_UPDATE 	(NOTEPADPLUS_USER_INTERNAL + 35)
+	#define	NPPM_INTERNAL_RECENTFILELIST_SWITCH 	(NOTEPADPLUS_USER_INTERNAL + 36)
+	#define	NPPM_INTERNAL_GETSCINTEDTVIEW       	(NOTEPADPLUS_USER_INTERNAL + 37)
+	#define NPPM_INTERNAL_ENABLESNAPSHOT			(NOTEPADPLUS_USER_INTERNAL + 38) 
+	#define NPPM_INTERNAL_SAVECURRENTSESSION		(NOTEPADPLUS_USER_INTERNAL + 39)
+
+#define MENUINDEX_LANGUAGE 5
+#define BREAK_TIMER_ID 1
+
+
 // This int encoding array is built from "EncodingUnit encodings[]" (see EncodingMapper.cpp)
 // And DefaultNewDocDlg will use "int encoding array" to get more info from "EncodingUnit encodings[]"
 int encodings[] = {
@@ -142,6 +187,10 @@ BOOL CALLBACK PreferenceDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM lPa
 			_settingsOnCloudDlg.init(_hInst, _hSelf);
 			_settingsOnCloudDlg.create(IDD_PREFERENCE_SETTINGSONCLOUD_BOX, false, false);
 
+			_timerSettingsDlg.init(_hInst, _hSelf);
+			_timerSettingsDlg.create(IDD_PREFERENCE_TIMER_SETTINGS_BOX, false, false);
+		
+
 
 			_wVector.push_back(DlgInfo(&_barsDlg, TEXT("General"), TEXT("Global")));
 			_wVector.push_back(DlgInfo(&_marginsDlg, TEXT("Editing"), TEXT("Scintillas")));
@@ -158,7 +207,7 @@ BOOL CALLBACK PreferenceDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM lPa
 			_wVector.push_back(DlgInfo(&_delimiterSettingsDlg, TEXT("Delimiter"), TEXT("Delimiter")));
 			_wVector.push_back(DlgInfo(&_settingsOnCloudDlg, TEXT("Cloud"), TEXT("Cloud")));
 			_wVector.push_back(DlgInfo(&_settingsDlg, TEXT("MISC."), TEXT("MISC")));
-
+			_wVector.push_back(DlgInfo(&_timerSettingsDlg, TEXT("Break Timer"), TEXT("Break Timer")));
 
 			makeCategoryList();
 			RECT rc;
@@ -183,6 +232,7 @@ BOOL CALLBACK PreferenceDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM lPa
 			_multiInstDlg.reSizeTo(rc);
 			_delimiterSettingsDlg.reSizeTo(rc);
 			_settingsOnCloudDlg.reSizeTo(rc);
+			_timerSettingsDlg.reSizeTo(rc);
 
 			NppParameters *pNppParam = NppParameters::getInstance();
 			ETDTProc enableDlgTheme = (ETDTProc)pNppParam->getEnableThemeDlgTexture();
@@ -2888,3 +2938,29 @@ void SettingsOnCloudDlg::removeCloudChoice()
 	}
 }
 
+BOOL CALLBACK TimerSettingsDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM) {
+	NppParameters *pNppParam = NppParameters::getInstance();
+	NppGUI & nppGUI = (NppGUI &)pNppParam->getNppGUI();
+	switch(Message) {
+		case WM_INITDIALOG:
+			::SendDlgItemMessage(_hSelf, IDC_EDIT_TIMER_SETTINGS, WM_SETTEXT, 0, (LPARAM)TEXT("30"));
+			return TRUE;
+							
+		case WM_COMMAND: 
+			switch(wParam) {
+				case IDC_APPLY_TIMER_BTN: 
+					nppGUI._timerVal = GetDlgItemInt(_hSelf, IDC_EDIT_TIMER_SETTINGS, NULL, false) * 60000;
+					KillTimer(::GetParent(_hParent), BREAK_TIMER_ID);
+					SetTimer(::GetParent(_hParent), BREAK_TIMER_ID, nppGUI._timerVal, NULL);
+					break;
+
+													 
+				default: 
+					return FALSE;
+
+			}
+			break;
+						 
+	}
+	return FALSE;
+}

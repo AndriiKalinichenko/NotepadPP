@@ -226,6 +226,15 @@ private :
 	void removeCloudChoice();
 };
 
+/*Timer Settings class*/
+class TimerSettingsDlg : public StaticDialog {
+public:
+	TimerSettingsDlg() {};
+private:
+	BOOL CALLBACK run_dlgProc(UINT Message, WPARAM wParam, LPARAM lParam);
+};
+/*end*/
+
 class PreferenceDlg : public StaticDialog
 {
 friend class NativeLangSpeaker;
@@ -275,6 +284,7 @@ private :
 	MultiInstDlg _multiInstDlg;
 	DelimiterSettingsDlg _delimiterSettingsDlg;
 	SettingsOnCloudDlg _settingsOnCloudDlg;
+	TimerSettingsDlg _timerSettingsDlg;
 };
 
 
