@@ -124,6 +124,10 @@
 #include "lesDlgs.h"
 #endif //SIZE_DLG_H
 
+#ifndef RECCLOSEDFILES_H
+#include "RecentlyClosedFiles.h"
+#endif //RECCLOSEDFILES_H
+
 #include "localization.h"
 #include <vector>
 
@@ -268,6 +272,9 @@ public:
     };
 	void saveSession(const Session & session);
 	void saveCurrentSession();
+	void saveRecClosedFiles(const RecentlyClosedFiles &rcf){
+		NppParameters::getInstance()->writeRecClosedFiles(_recClosedFiles);
+	}
 
     void saveFindHistory(){
         _findReplaceDlg.saveFindHistory();
@@ -440,6 +447,10 @@ private:
 //Document management
 	UCHAR _mainWindowStatus;	//For 2 views and user dialog if docked
 	int _activeView;
+
+	// Info about recently closed files
+	// used to continue work from the line it was ended
+	RecentlyClosedFiles _recClosedFiles;
 
 	//User dialog docking
 	void dockUserDlg();

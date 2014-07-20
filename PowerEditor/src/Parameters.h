@@ -73,6 +73,10 @@
 #include "Session.h"
 #endif //SESSION_H
 
+#ifndef RECCLOSEDFILES_H
+#include "RecentlyClosedFiles.h"
+#endif //RECCLOSEDFILES_H
+
 #include <tchar.h>
 
 class NativeLangSpeaker;
@@ -142,6 +146,10 @@ const TCHAR notepadStyleFile[] = TEXT("asNotepad.xml");
 void cutString(const TCHAR *str2cut, vector<generic_string> & patternVect);
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> continueBr
 struct CmdLineParams {
 	bool _isNoPlugin;
 	bool _isReadOnly;
@@ -1318,6 +1326,7 @@ public:
 	void writeUserDefinedLang();
 	void writeShortcuts();
 	void writeSession(const Session & session, const TCHAR *fileName = NULL);
+	void writeRecClosedFiles(const RecentlyClosedFiles &rcf);
 	bool writeFindHistory();
 
 	bool isExistingUserLangName(const TCHAR *newName) const {
@@ -1414,6 +1423,7 @@ public:
 
 	vector<MenuItemUnit> & getContextMenuItems() {return _contextMenuItems;};
 	const Session & getSession() const {return _session;};
+	const RecentlyClosedFiles & getRecClosedFiles() const { return _recClosedFiles; }
 
 	bool hasCustomContextMenu() const {return !_contextMenuItems.empty();};
 
@@ -1521,7 +1531,7 @@ private:
     static NppParameters *_pSelf;
 
 	TiXmlDocument *_pXmlDoc, *_pXmlUserDoc, *_pXmlUserStylerDoc, *_pXmlUserLangDoc,\
-		*_pXmlToolIconsDoc, *_pXmlShortcutDoc, *_pXmlSessionDoc,\
+		*_pXmlToolIconsDoc, *_pXmlShortcutDoc, *_pXmlSessionDoc, *_pXmlRecClosedFilesDoc,\
         *_pXmlBlacklistDoc;
 
 	TiXmlDocument *_importedULD[NB_MAX_IMPORTED_UDL];
@@ -1591,10 +1601,12 @@ private:
 	//vector<generic_string> _noMenuCmdNames;
 	vector<MenuItemUnit> _contextMenuItems;
 	Session _session;
+	RecentlyClosedFiles _recClosedFiles;
 
 	generic_string _shortcutsPath;
 	generic_string _contextMenuPath;
 	generic_string _sessionPath;
+	generic_string _recClosedFilesPath;
     generic_string _blacklistPath;
 	generic_string _nppPath;
 	generic_string _userPath;
@@ -1644,6 +1656,7 @@ private:
 	bool getPluginCmdsFromXmlTree();
 	bool getScintKeysFromXmlTree();
 	bool getSessionFromXmlTree(TiXmlDocument *pSessionDoc = NULL, Session *session = NULL);
+	bool getRecClosedFilesFromXmlTree();
     bool getBlackListFromXmlTree();
 
 	void feedGUIParameters(TiXmlNode *node);
