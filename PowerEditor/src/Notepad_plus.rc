@@ -210,9 +210,9 @@ BEGIN
     BEGIN
                 POPUP "&New"
                 BEGIN
+                MENUITEM "TXT",                         IDM_FILE_NEW
                   POPUP "C"                              
                   BEGIN
-                     MENUITEM "TXT",                         IDM_FILE_NEW
                      MENUITEM "C",                           IDM_FILE_NEW_C
                      MENUITEM "C#",                          IDM_FILE_NEW_CS
                      MENUITEM "C++",                         IDM_FILE_NEW_CPP
