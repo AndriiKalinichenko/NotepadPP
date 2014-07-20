@@ -860,6 +860,10 @@ protected:
 		setLexer(SCLEX_COFFEESCRIPT, L_COFFEESCRIPT, LIST_0 | LIST_1 | LIST_2  | LIST_3);
 	};
 
+	void setSwiftLexer(){
+		setLexer(SCLEX_SWIFT, L_SWIFT, LIST_NONE);
+	};
+
     //--------------------
 
 	void setSearchResultLexer() {
