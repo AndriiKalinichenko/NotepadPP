@@ -208,7 +208,17 @@ IDR_M30_MENU MENU
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "&New",                             IDM_FILE_NEW
+                POPUP "&New"
+                BEGIN
+                MENUITEM "TXT",                         IDM_FILE_NEW
+                  POPUP "C"                              
+                  BEGIN
+                     MENUITEM "C",                           IDM_FILE_NEW_C
+                     MENUITEM "C#",                          IDM_FILE_NEW_CS
+                     MENUITEM "C++",                         IDM_FILE_NEW_CPP
+                  END
+                MENUITEM "Java",                        IDM_FILE_NEW_JAVA
+                END
         MENUITEM "&Open...",                         IDM_FILE_OPEN
 		POPUP "Open Containing Folder"
 		BEGIN
