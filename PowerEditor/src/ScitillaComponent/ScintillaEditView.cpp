@@ -132,6 +132,7 @@ LanguageName ScintillaEditView::langNames[L_EXTERNAL+1] = {
 {TEXT("r"),				TEXT("R"),					TEXT("R programming language"),							L_R,			SCLEX_R},
 {TEXT("jsp"),			TEXT("JSP"),				TEXT("JavaServer Pages script file"),					L_JSP,			SCLEX_HTML},
 {TEXT("coffeescript"),	TEXT("CoffeeScript"),		TEXT("CoffeeScript file"),								L_COFFEESCRIPT,	SCLEX_COFFEESCRIPT},
+{TEXT("swift"),			TEXT("Swift"),				TEXT("Swift file"),										L_SWIFT,		SCLEX_SWIFT},
 {TEXT("ext"),			TEXT("External"),			TEXT("External"),										L_EXTERNAL,		SCLEX_NULL}
 };
 
@@ -1207,6 +1208,9 @@ void ScintillaEditView::defineDocType(LangType typeDoc)
 
 		case L_CSS :
 			setCssLexer(); break;
+		
+		case L_SWIFT :
+			setSwiftLexer(); break;
 
 		case L_LUA :
 			setLuaLexer(); break;
