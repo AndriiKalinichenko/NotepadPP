@@ -205,7 +205,7 @@
 					<Item id = "47000" name = "Про Notepad++..."/>
                     <Item id = "47001" name = "Домашня сторінка Notepad++"/>
                     <Item id = "47002" name = "Сторінка проекту Notepad++"/>
-                    <Item id = "47003" name = "NpWiki++ (Онлайн допомога)"/>
+                    <Item id = "47003" name = "NpWiki++ - Онлайн допомога"/>
                     <Item id = "47004" name = "Форум"/>
                     <Item id = "47005" name = "Більше доповнень"/>
 					<Item id = "47006" name = "Оновити Notepad++"/>
@@ -312,7 +312,7 @@
 				<Item id = "2" name = "Скасувати"/>
 				<Item id = "2301" name = "&amp;Гаразд"/>
 				<Item id = "2303" name = "Прозорість"/>
-				<Item id = "2306" name = "Select theme : "/>
+				<Item id = "2306" name = "Вибрати тему : "/>
                 <SubDialog>
                 	<Item id = "2204" name = "Жирний"/>
                     <Item id = "2205" name = "Курсив"/>
@@ -427,7 +427,7 @@
 					<Item id = "6221" name = "Ч"/>
 					<Item id = "6222" name = "Р"/>
 					<Item id = "6224" name = "Налаштування Мульти-Редактування"/>
-                    <Item id = "6225" name = "Увімк. (Ctrl+Клік миші/вибір)"/>
+                    <Item id = "6225" name = "Увімкнути (Ctrl+Клік миші/вибір)"/>
                     <Item id = "6201" name = "Оформлення меж блоку"/>
 					<Item id = "6202" name = "Просте"/>
 					<Item id = "6203" name = "Стрілками"/>
@@ -579,7 +579,7 @@
                 <Item id = "2032" name = "Формат"/>
                 <Item id = "2024" name = "Десятковий"/>
                 <Item id = "2025" name = "8-значний"/>
-                <Item id = "2026" name = "Hex-формат"/>
+                <Item id = "2026" name = "Хекс-формат"/>
                 <Item id = "2027" name = "Бінарний"/>
 				<Item id = "1" name = "OK"/>
 				<Item id = "2" name = "Скасувати"/>
